@@ -1,4 +1,4 @@
-# yarn-berry을 사용해 모노레포 구성하기
+# yarn-berry으로 모노레포 구성하기
 
 - yarn-berry는 yarn 2.0 이상 버전을 말함
 - 모듈 설치 시 node_modules 디렉토리가 아닌 .pnp.cjs 파일을 생성함
