@@ -371,7 +371,7 @@ yarn workspace @rarla/ui add typescript react react-dom @types/node @types/react
 }
 ```
 
-1. `packages/ui/src/index.ts`, `packages/ui/src/Button.tsx` 파일 생성
+4. `packages/ui/src/index.ts`, `packages/ui/src/Button.tsx` 파일 생성
 
 - `packages/ui/src/Button.tsx`
 
@@ -396,7 +396,7 @@ const Button = (props: ButtonProps) => {
 export default Button;
 ```
 
-- packages/ui/src/index.ts
+- `packages/ui/src/index.ts`
 
 ```typescript
 export {default as Button} from './Button';
@@ -459,10 +459,10 @@ You may need an appropriate loader to handle this file type, currently no loader
 
 ```shell
 # next-transpile-modules 설치
-yarn workspace @wanted/web add next-transpile-modules
+yarn workspace @rarla/web add next-transpile-modules
 ```
 
-- apps/rarla/next.config.js 파일 수정
+- `apps/rarla/next.config.js` 파일 수정
 
 ```javascript
 // @rarla/ui 패키지를 tranpile 시킨다.
@@ -476,3 +476,44 @@ const nextConfig = {
 
 module.exports = withTM(nextConfig);
 ```
+
+## typecheck 넣어보기
+
+1. typescript package.json에 script추가
+
+- 추가해야 할 파일
+  apps/rarla/package.json
+  packages/lib/package.json
+  packages/ui/package.json
+
+```json
+"scripts": {
+  "typecheck": "tsc --project ./tsconfig.json --noEmit"
+},
+```
+
+2. `yarn workspace @rarla/web typecheck`
+
+3. 모든 프로젝트를 typecheck 하는 scripts 만들기
+
+- workspace-tools plugin 설치하기
+
+```shell
+yarn plugin import workspace-tools
+```
+
+- root package.json 수정하기
+
+```json
+"scripts": {
+  "g:typecheck": "yarn workspaces foreach -pv run typecheck"
+},
+```
+
+- 실행
+
+```shell
+yarn g:typecheck
+```
+
+---
