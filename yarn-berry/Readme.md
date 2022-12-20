@@ -131,8 +131,8 @@ yarn init
 
 ```typescript
 export const sayHello = () => {
-  console.log("hello from lib");
-  return "hello from lib";
+  console.log('hello from lib');
+  return 'hello from lib';
 };
 ```
 
@@ -176,15 +176,12 @@ yarn dlx @yarnpkg/sdks
 
 ```json
 {
-  "recommendations": [
-    "arcanis.vscode-zipfs",
-    "dbaeumer.vscode-eslint",
-    "esbenp.prettier-vscode"
-  ]
+  "recommendations": ["arcanis.vscode-zipfs", "dbaeumer.vscode-eslint", "esbenp.prettier-vscode"]
 }
 ```
 
 2. vscode 익스텐션 설치
+
 - esbenp.prettier-vscode
 - dbaeumer.vscode-eslint
 
@@ -218,6 +215,7 @@ yarn dlx @yarnpkg/sdks
 ```
 
 5. root에 `.eslintrc.js` 파일 추가
+
 ```javascript
 module.exports = {
   root: true,
@@ -230,7 +228,7 @@ module.exports = {
 
   parser: '@typescript-eslint/parser',
   parserOptions: {
-    ecmaFeatures: { jsx: true },
+    ecmaFeatures: {jsx: true},
   },
 
   extends: [
@@ -241,7 +239,7 @@ module.exports = {
     'prettier',
   ],
   plugins: ['@typescript-eslint', 'import', 'react', 'react-hooks'],
-  settings: { 'import/resolver': { typescript: {} }, react: { version: 'detect' } },
+  settings: {'import/resolver': {typescript: {}}, react: {version: 'detect'}},
   rules: {
     'no-implicit-coercion': 'error',
     'no-warning-comments': [
@@ -252,7 +250,7 @@ module.exports = {
       },
     ],
     curly: ['error', 'all'],
-    eqeqeq: ['error', 'always', { null: 'ignore' }],
+    eqeqeq: ['error', 'always', {null: 'ignore'}],
 
     // Hoisting을 전략적으로 사용한 경우가 많아서
     '@typescript-eslint/no-use-before-define': 'off',
@@ -267,14 +265,14 @@ module.exports = {
     '@typescript-eslint/no-empty-function': 'off',
     '@typescript-eslint/naming-convention': [
       'error',
-      { format: ['camelCase', 'UPPER_CASE', 'PascalCase'], selector: 'variable', leadingUnderscore: 'allow' },
-      { format: ['camelCase', 'PascalCase'], selector: 'function' },
-      { format: ['PascalCase'], selector: 'interface' },
-      { format: ['PascalCase'], selector: 'typeAlias' },
+      {format: ['camelCase', 'UPPER_CASE', 'PascalCase'], selector: 'variable', leadingUnderscore: 'allow'},
+      {format: ['camelCase', 'PascalCase'], selector: 'function'},
+      {format: ['PascalCase'], selector: 'interface'},
+      {format: ['PascalCase'], selector: 'typeAlias'},
     ],
     '@typescript-eslint/explicit-module-boundary-types': 'off',
-    '@typescript-eslint/array-type': ['error', { default: 'array-simple' }],
-    '@typescript-eslint/no-unused-vars': ['error', { ignoreRestSiblings: true }],
+    '@typescript-eslint/array-type': ['error', {default: 'array-simple'}],
+    '@typescript-eslint/no-unused-vars': ['error', {ignoreRestSiblings: true}],
     '@typescript-eslint/member-ordering': [
       'error',
       {
@@ -295,7 +293,7 @@ module.exports = {
       'error',
       {
         groups: ['builtin', 'external', 'internal', 'parent', 'sibling', 'index', 'object'],
-        alphabetize: { order: 'asc', caseInsensitive: true },
+        alphabetize: {order: 'asc', caseInsensitive: true},
       },
     ],
 
@@ -304,7 +302,7 @@ module.exports = {
     'react/display-name': 'off',
     'react-hooks/exhaustive-deps': 'error',
     'react/react-in-jsx-scope': 'off',
-    'react/no-unknown-property': ['error', { ignore: ['css'] }],
+    'react/no-unknown-property': ['error', {ignore: ['css']}],
   },
 };
 ```
@@ -323,3 +321,158 @@ module.exports = {
 - eslint가 정상적으로 동작이 안되면 eslint 서버를 재시작 해본다.
   - command + shift + p
   - ESLint: Restart EsLint Server 선택
+
+## react library 패키지 만들기.
+
+1. packages/ui 폴더 생성 및 `package.json` 생성
+
+```shell
+cd packages/ui
+yarn init
+```
+
+- `package.json` 수정
+
+```json
+{
+  "name": "@rarla/ui",
+  "packageManager": "yarn@3.3.0"
+}
+```
+
+2. react dependency 설치
+
+- root로 이동
+
+```shell
+yarn
+
+yarn workspace @rarla/ui add typescript react react-dom @types/node @types/react @types/react-dom -D
+```
+
+3.  ui 패키지 설정
+
+- `packages/ui/tsconfig.json` 설정
+
+```json
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "baseUrl": "./src",
+    "target": "esnext",
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "module": "esnext",
+    "jsx": "react-jsx",
+    "noEmit": false,
+    "incremental": true
+  },
+  "exclude": ["**/node_modules", "**/.*/", "dist", "build"]
+}
+```
+
+1. `packages/ui/src/index.ts`, `packages/ui/src/Button.tsx` 파일 생성
+
+- `packages/ui/src/Button.tsx`
+
+```typescript
+import {ButtonHTMLAttributes, MouseEventHandler, ReactNode} from 'react';
+
+export type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
+  children: ReactNode;
+  onClick?: MouseEventHandler<HTMLButtonElement>;
+};
+
+const Button = (props: ButtonProps) => {
+  const {children, onClick, ...other} = props;
+
+  return (
+    <button type="button" onClick={onClick} {...other}>
+      {children}
+    </button>
+  );
+};
+
+export default Button;
+```
+
+- packages/ui/src/index.ts
+
+```typescript
+export {default as Button} from './Button';
+```
+
+5. `packages/ui/package.json` main 추가
+
+```json
+{
+  "name": "@rarla/ui",
+  "packageManager": "yarn@3.3.0",
+  "main": "src/index.ts",
+  "devDependencies": {
+    "@types/node": "^18.11.16",
+    "@types/react": "^18.0.26",
+    "@types/react-dom": "^18.0.9",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "typescript": "^4.9.4"
+  }
+}
+```
+
+6. apps/rarla 에서 packages/ui 사용
+
+- root에서 실행
+
+```shell
+yarn workspace @rarla/web add @rarla/ui
+```
+
+- `rarla/pages/index.tsx`
+
+```typescript
+import {Button} from '@rarla/ui';
+...
+<Button>Hello ui button</Button>
+```
+
+7. 구동 후 확인
+
+```shell
+yarn workspace @rarla/web dev
+```
+
+- 실행 시 브라우저에서 typescript 문법을 해석하지 못해서 아래와 같은 오류 발생
+
+```
+../../packages/ui/src/Button.tsx
+Module parse failed: Unexpected token (3:7)
+You may need an appropriate loader to handle this file type, currently no loaders are configured to process this file. See https://webpack.js.org/concepts#loaders
+| import {ButtonHTMLAttributes, MouseEventHandler, ReactNode} from 'react';
+|
+> export type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
+|   children: ReactNode;
+|   variant: 'contained' | 'outlined';
+```
+
+- @rarla/web에서 javascript로 변환(transpile) 해줘야 한다.
+
+```shell
+# next-transpile-modules 설치
+yarn workspace @wanted/web add next-transpile-modules
+```
+
+- apps/rarla/next.config.js 파일 수정
+
+```javascript
+// @rarla/ui 패키지를 tranpile 시킨다.
+const withTM = require('next-transpile-modules')(['@rarla/ui']);
+
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  reactStrictMode: true,
+  swcMinify: true,
+};
+
+module.exports = withTM(nextConfig);
+```
